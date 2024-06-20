@@ -1,0 +1,55 @@
+data:
+  train_images_folder: data/train
+  train_dataset: data/train_captions.csv
+  dev_images_folder: data/valid
+  dev_dataset: data/valid_captions.csv
+  num_worker: 2
+
+tokenizer:
+  padding: max_length
+  max_input_length: 40
+  max_target_length: 40
+  truncation: True
+  return_token_type_ids: True
+  return_attention_mask: True
+
+text_embedding:
+  text_encoder: GanjinZero/biobart-base
+  freeze: True
+  use_lora: False
+
+vision_embedding:
+  image_encoder: google/vit-base-patch16-224-in21k
+  freeze: True
+  already_extracted: False
+  feature_path: data/feature_VIT
+
+generator_args:
+  max_length: 40
+  min_length: 1
+  num_beams: 4
+  length_penalty: 1.5
+  no_repeat_ngram_size: 3
+  early_stopping: True
+
+model:
+  type_model: biobart  # Custom name for the multimodal model
+
+train:
+  output_dir: checkpoint
+  cuda_device: cuda:0
+  precision: float32
+  seed: 12345
+  num_train_epochs: 10
+  patience: 5
+  learning_rate: 1.0e-4
+  weight_decay: 0.0
+  metric_for_best_model: loss
+  per_device_train_batch_size: 32
+  per_device_dev_batch_size: 32
+
+infer:
+  with_labels: False
+  test_images_folder: data/test
+  test_dataset: data/test_captions.csv
+  per_device_test_batch_size: 32
